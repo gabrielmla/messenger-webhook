@@ -1,5 +1,10 @@
 'use strict';
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const defaultMessages = {
+	default: "Qual informação deseja obter? Filmes\nPreços\nHorário\nMe envie uma mensagem com um dessas palavras e responderei o mais rápido possível :)",
+	horario: "Todos os dias de 14h ás 22h!",
+	valores: "Segunda a Sexta-Feira\nPreço único: R$ 12,00 (2D) | R$ 14,00 (3D)\nSábado, Domingo e feriados\nInteira: R$ 24,00 (2D) | Meia: R$ 12,00 (2D)\nInteira: R$ 28,00 (3D) | Meia: R$ 14,00 (3D)"
+};
 // Imports dependencies and set up http server
 const request = require('request');
 const
@@ -181,9 +186,3 @@ function setGreetingText() {
 	};
 	createGreetingApi(greetingData);
 }
-
-defaultMessages = {
-	default: "Qual informação deseja obter? Filmes\nPreços\nHorário\nMe envie uma mensagem com um dessas palavras e responderei o mais rápido possível :)",
-	horario: "Todos os dias de 14h ás 22h!",
-	valores: "Segunda a Sexta-Feira\nPreço único: R$ 12,00 (2D) | R$ 14,00 (3D)\nSábado, Domingo e feriados\nInteira: R$ 24,00 (2D) | Meia: R$ 12,00 (2D)\nInteira: R$ 28,00 (3D) | Meia: R$ 14,00 (3D)"
-};

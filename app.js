@@ -8,7 +8,10 @@ const
   app = express().use(bodyParser.json()); // creates express http server
 
 // Sets server port and logs message on success
-app.listen(process.env.PORT || 1337, () => console.log('webhook is listening'));
+app.listen(process.env.PORT || 1337, function() {
+	console.log('webhook is listening');
+	setGreetingText();
+};
 
 // Creates the endpoint for our webhook
 // Todos webhook events sao enviados por post requests
@@ -79,26 +82,35 @@ app.get('/webhook', (req, res) => {
 
 // Handles messages events
 function handleMessage(sender_psid, received_message) {
-
   let response;
-
+  let message = received_message.text;
+  
   // Checks if the message contains text
-  if (received_message.text) {
-    
-    // Creates the payload for a basic text message, which
+  if (message) {    
+    // Create the payload for a basic text message, which
     // will be added to the body of our request to the Send API
-    response = {
-      "text": `You sent the message: "${received_message.text}". Now send me an attachment!`
+    if (message.toLowerCase() === 'filmes') {
+    	//crawler
+    } else if (message.toLowerCase() === 'horário' || message.toLowerCase() === 'horario') {
+    	response = {
+    		"text": defaultMessages.horario
+    	};
+    } else if (message.toLowerCase() === 'preços' || message.toLowerCase() === 'precos') {
+    	response = {
+    		"text": defaultMessages.valores
+    	};
+    } else {
+    	response = {
+    		"text": defaultMessages.default
+    	};
     }
 
-  } else if (received_message.attachments) {
-  
-    // Gets the URL of the message attachment
-    let attachment_url = received_message.attachments[0].payload.url;
-  
+    /*response = {
+      "text": `You sent the message: "${received_message.text}". Now send me an attachment!`
+    }*/
   } 
   
-  // Sends the response message
+  // Send the response message
   callSendAPI(sender_psid, response);    
 }
 
@@ -143,3 +155,35 @@ function callSendAPI(sender_psid, response) {
     }
   }); 
 }
+
+function createGreetingApi(data) {
+	request({
+		uri: 'https://graph.facebook.com/v2.6/me/thread_settings',
+		qs: { access_token: PAGE_ACCESS_TOKEN },
+		method: 'POST',
+		json: data
+
+	}, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+  			console.log("Greeting set successfully!");
+		} else {
+  			console.error("Failed calling Thread Reference API", response.statusCode, response.statusMessage, body.error);
+		}
+	});  
+}
+
+function setGreetingText() {
+	var greetingData = {
+		setting_type: "greeting",
+		greeting:{
+			text: "Olá {{user_first_name}}! Posso lhe dar informações sobre o Cinesercla Cinemas do shopping Partage de Campina Grande. Qual informação deseja obter? Filmes\nPreços\nHorário\nMe envie uma mensagem com um desses itens e responderei o mais rápido possível :)"
+		}
+	};
+	createGreetingApi(greetingData);
+}
+
+defaultMessages = {
+	default: "Qual informação deseja obter? Filmes\nPreços\nHorário\nMe envie uma mensagem com um dessas palavras e responderei o mais rápido possível :)",
+	horario: "Todos os dias de 14h ás 22h!",
+	valores: "Segunda a Sexta-Feira\nPreço único: R$ 12,00 (2D) | R$ 14,00 (3D)\nSábado, Domingo e feriados\nInteira: R$ 24,00 (2D) | Meia: R$ 12,00 (2D)\nInteira: R$ 28,00 (3D) | Meia: R$ 14,00 (3D)"
+};

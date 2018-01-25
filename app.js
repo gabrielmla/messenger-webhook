@@ -11,7 +11,7 @@ const
 app.listen(process.env.PORT || 1337, function() {
 	console.log('webhook is listening');
 	setGreetingText();
-};
+});
 
 // Creates the endpoint for our webhook
 // Todos webhook events sao enviados por post requests

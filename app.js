@@ -1,11 +1,13 @@
 'use strict';
+const crawler = require('./crawler.js');
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const defaultMessages = {
 	default: "Qual informação deseja obter? Filmes\nPreços\nHorário\nMe envie uma mensagem com um dessas palavras e responderei o mais rápido possível :)",
 	horario: "Todos os dias de 14h ás 22h!",
 	valores: "Segunda a Sexta-Feira\nPreço único: R$ 12,00 (2D) | R$ 14,00 (3D)\nSábado, Domingo e feriados\nInteira: R$ 24,00 (2D) | Meia: R$ 12,00 (2D)\nInteira: R$ 28,00 (3D) | Meia: R$ 14,00 (3D)"
 };
-const crawler = require('./crawler.js');
+var movies;
+
 // Imports dependencies and set up http server
 const request = require('request');
 const
@@ -15,6 +17,7 @@ const
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, function() {
+	movies = crawler.crawl();
 	console.log('webhook is listening');
 	setGreetingText();
 });
@@ -96,14 +99,9 @@ function handleMessage(sender_psid, received_message) {
     // Create the payload for a basic text message, which
     // will be added to the body of our request to the Send API
     if (message.toLowerCase() === 'filmes') {
-    	sendTypingOn(sender_psid);
-    	crawler.crawl(function(message) {
-    		response = {
-    			"text": message
-    		};
-    		sendTypingOff(sender_psid);
-
-    	});
+    	response = {
+    		"text": movies
+    	}
     } else if (message.toLowerCase() === 'horário' || message.toLowerCase() === 'horario') {
     	response = {
     		"text": defaultMessages.horario

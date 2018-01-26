@@ -13,9 +13,10 @@ var pagesToVisit = new Set(); // O site possui links repetidos, utilizo o Set pa
 pagesToVisit.add(START_URL);
 
 // Realizar o crawl das paginas a serem visitadas
-function crawl() {
+function crawl(callback) {
   if (pagesToVisit.length <= 0) {
-    return parseJson(movies);
+    var result = parseJson(movies);
+    return callback(result);
   }
   
   // Caso a pesquisa por links absolutos não tenha sido feita
@@ -140,5 +141,5 @@ function parseJson(data) {
 }
 
 module.exports = {
-  crawl: function() { return crawl() }
+  crawl: function(callback) { return crawl(callback) }
 };

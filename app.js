@@ -97,9 +97,13 @@ function handleMessage(sender_psid, received_message) {
     // will be added to the body of our request to the Send API
     if (message.toLowerCase() === 'filmes') {
     	sendTypingOn(sender_psid);
-    	response = {
-    		"text": crawler.crawl()
-    	}
+    	crawler.crawl(function(message) {
+    		response = {
+    			"text": message
+    		};
+    		sendTypingOff(sender_psid);
+
+    	});
     } else if (message.toLowerCase() === 'horário' || message.toLowerCase() === 'horario') {
     	response = {
     		"text": defaultMessages.horario
@@ -115,7 +119,7 @@ function handleMessage(sender_psid, received_message) {
     }
 
   } 
-  let request_body = {
+  var request_body = {
     "recipient": {
       "id": sender_psid
     },
@@ -139,7 +143,7 @@ function handlePostback(sender_psid, received_postback) {
     response = { "text": "Oops, try sending another image." }
   }
 
-  let request_body = {
+  var request_body = {
     "recipient": {
       "id": sender_psid
     },
@@ -150,7 +154,7 @@ function handlePostback(sender_psid, received_postback) {
 }
 
 function sendTypingOn(sender_psid) {
-  var messageData = {
+  var request_body = {
     recipient: {
       id: sender_psid
     },
@@ -160,8 +164,21 @@ function sendTypingOn(sender_psid) {
   callSendAPI(request_body);
 }
 
+function sendTypingOff(recipientId) {
+  console.log("Turning typing indicator off");
+ 
+  var request_body = {
+    recipient: {
+      id: recipientId
+    },
+    sender_action: "typing_off"
+  };
+ 
+  callSendAPI(request_body);
+}
+
 // Sends response messages via the Send API
-function callSendAPI(sender_psid, request_body) {
+function callSendAPI(request_body) {
   // Send the HTTP request to the Messenger Platform
   request({
     "uri": "https://graph.facebook.com/v2.6/me/messages",

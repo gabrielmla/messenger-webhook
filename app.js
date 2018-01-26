@@ -97,7 +97,6 @@ app.get('/webhook', (req, res) => {
 function handleMessage(sender_psid, received_message) {
   let response;
   let message = received_message.text;
-  console.log(movies);
   
   // Checks if the message contains text
   if (message) {    
@@ -182,6 +181,7 @@ function sendTypingOff(recipientId) {
 
 // Sends response messages via the Send API
 function callSendAPI(request_body) {
+	console.log(request_body);
   // Send the HTTP request to the Messenger Platform
   request({
     "uri": "https://graph.facebook.com/v2.6/me/messages",

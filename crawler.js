@@ -5,6 +5,7 @@ var START_URL = "http://partagecampina.com.br/site/cinema/";
 var BASE_URL  = "http://partagecampina.com.br/site/filme/";
 
 var movies = [];
+var finished = false;
 
 var linksFound = false;
 var numPagesVisited = 0;
@@ -12,55 +13,67 @@ var pagesToVisit = new Set(); // O site possui links repetidos, utilizo o Set pa
 
 pagesToVisit.add(START_URL);
 
-// Realizar o crawl das paginas a serem visitadas
-function crawl() {
-  if (pagesToVisit.length <= 0) {
-    var result = parseJson(movies);
-    return result;
+var promise = new Promise(function(resolve, reject) {
+  // Realizar o crawl das paginas a serem visitadas
+  function crawl() {
+    if (pagesToVisit.length <= 0) {
+      console.log("Parsing JSON...");
+      movies = parseJson(movies);
+      finished = true;
+      return resolve(movies);
+    }
+    
+    // Caso a pesquisa por links absolutos não tenha sido feita
+    if (!linksFound) {
+      nextPage = START_URL;
+    } else {
+      // Transformando o Set em Array para utilizar a função pop()
+      pagesToVisit = Array.from(pagesToVisit);
+      var nextPage = pagesToVisit.pop();
+    }
+
+    visitPage(nextPage, crawl);
+  }
+
+  function visitPage(url, callback) {
+    // Incrementando numero de paginas visitadas
+    numPagesVisited++;
+
+    // Fazendo a request
+    console.log("Visiting page " + url);
+    request(url, function(error, response, body) {
+      // Verificando o status HTTP (se eh igual a 200)
+      console.log("Status code: " + response.statusCode);
+      if(response.statusCode !== 200) {
+        callback();
+        return;
+      }
+      // Utilizando o cheerio para fazer o parse do HTML
+      var $ = cheerio.load(body);
+
+      // Caso seja a URL de ínicio, não adicionar
+      if (url !== START_URL) {
+        movies.push(collectMovies($));
+      }
+
+      // Na primeira iteração os links dos filmes deverão ser coletados
+      if (!linksFound) {
+        collectInternalLinks($);
+        linksFound = true;
+      }
+      // Callback para realizar um novo crawl()
+      callback();
+    });
   }
   
-  // Caso a pesquisa por links absolutos não tenha sido feita
-  if (!linksFound) {
-    nextPage = START_URL;
-  } else {
-    // Transformando o Set em Array para utilizar a função pop()
-    pagesToVisit = Array.from(pagesToVisit);
-    var nextPage = pagesToVisit.pop();
+  if (!finished) {
+    crawl();
   }
+});
 
-  visitPage(nextPage, crawl);
-}
-
-function visitPage(url, callback) {
-  // Incrementando numero de paginas visitadas
-  numPagesVisited++;
-
-  // Fazendo a request
-  console.log("Visiting page " + url);
-  request(url, function(error, response, body) {
-    // Verificando o status HTTP (se eh igual a 200)
-    console.log("Status code: " + response.statusCode);
-    if(response.statusCode !== 200) {
-      callback();
-      return;
-    }
-    // Utilizando o cheerio para fazer o parse do HTML
-    var $ = cheerio.load(body);
-
-    // Caso seja a URL de ínicio, não adicionar
-    if (url !== START_URL) {
-      movies.push(collectMovies($));
-    }
-
-    // Na primeira iteração os links dos filmes deverão ser coletados
-    if (!linksFound) {
-      collectInternalLinks($);
-      linksFound = true;
-    }
-    // Callback para realizar um novo crawl()
-    callback();
-  });
-}
+/*promise.then(function(value) {
+  console.log(value);
+});*/
 
 // Função para procurar palavras no HTML
 function searchForWord($, word) {
@@ -129,17 +142,18 @@ function parseJson(data) {
       if (movie.hasOwnProperty(key) && key !== 'description') {
         if (key === 'title') {
           message += movie[key].replace("Horário de Funcionamento e Valores", "");
-        } else {
+        } else if (movie[key] !== '') {
           message += movie[key];
         }
         message += "\n";
       }
     }
+    message += "\n";
     finalMessage += message;
   }
   return finalMessage;
 }
 
 module.exports = {
-  crawl: function() { return crawl() }
+  promise
 };

@@ -16,11 +16,14 @@ const
   app = express().use(bodyParser.json()); // creates express http server
 
 // Sets server port and logs message on success
-app.listen(process.env.PORT || 1337, function() {
-	movies = crawler.crawl();
-	console.log('webhook is listening');
-	setGreetingText();
+crawler.promise.then(function(result) {
+	movies = result;
+	app.listen(process.env.PORT || 1337, function() {
+		console.log('webhook is listening');
+		setGreetingText();
+	});
 });
+
 
 // Creates the endpoint for our webhook
 // Todos webhook events sao enviados por post requests
@@ -102,7 +105,7 @@ function handleMessage(sender_psid, received_message) {
     	response = {
     		"text": movies
     	}
-    } else if (message.toLowerCase() === 'horário' || message.toLowerCase() === 'horario') {
+    } else if (message.toLowerCase() === 'horários' || message.toLowerCase() === 'horarios') {
     	response = {
     		"text": defaultMessages.horario
     	};
@@ -212,12 +215,8 @@ function setGreetingText() {
 	var greetingData = {
 		setting_type: "greeting",
 		greeting:{
-			text: "Olá {{user_first_name}}! Posso lhe dar informações sobre o Cinesercla Cinemas do shopping Partage de Campina Grande. Qual informação deseja obter?\nFilmes\nPreços\nHorário\nMe envie uma mensagem com um desses itens e responderei o mais rápido possível :)"
+			text: "Olá {{user_first_name}}! Posso lhe dar informações sobre o Cinesercla Cinemas do shopping Partage de Campina Grande. Qual informação deseja obter?\nFilmes\nPreços\nHorários\nMe envie uma mensagem com um desses itens e responderei o mais rápido possível :)"
 		}
 	};
 	createGreetingApi(greetingData);
-}
-
-function parseJson(json) {
-	var keys = Object.keys(json);
 }

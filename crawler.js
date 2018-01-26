@@ -142,10 +142,11 @@ function parseJson(data) {
       if (movie.hasOwnProperty(key) && key !== 'description') {
         if (key === 'title') {
           message += movie[key].replace("Horário de Funcionamento e Valores", "");
+          message += "\n";
         } else if (movie[key] !== '') {
           message += movie[key];
-        }
-        message += "\n";
+          message += "\n";
+        } 
       }
     }
     message += "\n";

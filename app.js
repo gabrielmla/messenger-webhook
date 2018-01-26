@@ -20,6 +20,7 @@ crawler.promise.then(function(result) {
 	movies = result;
 	app.listen(process.env.PORT || 1337, function() {
 		console.log('webhook is listening');
+		console.log(result);
 		setGreetingText();
 	});
 });
@@ -96,6 +97,7 @@ app.get('/webhook', (req, res) => {
 function handleMessage(sender_psid, received_message) {
   let response;
   let message = received_message.text;
+  console.log(movies);
   
   // Checks if the message contains text
   if (message) {    

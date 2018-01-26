@@ -156,7 +156,7 @@ function parseJson(data) {
       finalMessage += message;
     } else {
       result.push(finalMessage);
-      finalMessage = "";
+      finalMessage = message;
     }
   }
   return result;

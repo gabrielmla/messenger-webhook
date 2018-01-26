@@ -5,6 +5,7 @@ const defaultMessages = {
 	horario: "Todos os dias de 14h ás 22h!",
 	valores: "Segunda a Sexta-Feira\nPreço único: R$ 12,00 (2D) | R$ 14,00 (3D)\nSábado, Domingo e feriados\nInteira: R$ 24,00 (2D) | Meia: R$ 12,00 (2D)\nInteira: R$ 28,00 (3D) | Meia: R$ 14,00 (3D)"
 };
+const crawler = require('./crawler.js');
 // Imports dependencies and set up http server
 const request = require('request');
 const
@@ -95,7 +96,10 @@ function handleMessage(sender_psid, received_message) {
     // Create the payload for a basic text message, which
     // will be added to the body of our request to the Send API
     if (message.toLowerCase() === 'filmes') {
-    	//crawler
+    	sendTypingOn(sender_psid);
+    	response = {
+    		"text": crawler.crawl();
+    	}
     } else if (message.toLowerCase() === 'horário' || message.toLowerCase() === 'horario') {
     	response = {
     		"text": defaultMessages.horario
@@ -110,13 +114,15 @@ function handleMessage(sender_psid, received_message) {
     	};
     }
 
-    /*response = {
-      "text": `You sent the message: "${received_message.text}". Now send me an attachment!`
-    }*/
   } 
-  
+  let request_body = {
+    "recipient": {
+      "id": sender_psid
+    },
+    "message": response
+  }
   // Send the response message
-  callSendAPI(sender_psid, response);    
+  callSendAPI(request_body);    
 }
 
 // Handles messaging_postbacks events
@@ -132,20 +138,30 @@ function handlePostback(sender_psid, received_postback) {
   } else if (payload === 'no') {
     response = { "text": "Oops, try sending another image." }
   }
-  // Send the message to acknowledge the postback
-  callSendAPI(sender_psid, response);
-}
 
-// Sends response messages via the Send API
-function callSendAPI(sender_psid, response) {
-  // Construct the message body
   let request_body = {
     "recipient": {
       "id": sender_psid
     },
     "message": response
   }
+  // Send the message to acknowledge the postback
+  callSendAPI(request_body);
+}
 
+function sendTypingOn(sender_psid) {
+  var messageData = {
+    recipient: {
+      id: sender_psid
+    },
+    sender_action: "typing_on"
+  };
+ 
+  callSendAPI(request_body);
+}
+
+// Sends response messages via the Send API
+function callSendAPI(sender_psid, request_body) {
   // Send the HTTP request to the Messenger Platform
   request({
     "uri": "https://graph.facebook.com/v2.6/me/messages",
@@ -181,8 +197,12 @@ function setGreetingText() {
 	var greetingData = {
 		setting_type: "greeting",
 		greeting:{
-			text: "Olá {{user_first_name}}! Posso lhe dar informações sobre o Cinesercla Cinemas do shopping Partage de Campina Grande. Qual informação deseja obter? Filmes\nPreços\nHorário\nMe envie uma mensagem com um desses itens e responderei o mais rápido possível :)"
+			text: "Olá {{user_first_name}}! Posso lhe dar informações sobre o Cinesercla Cinemas do shopping Partage de Campina Grande. Qual informação deseja obter?\nFilmes\nPreços\nHorário\nMe envie uma mensagem com um desses itens e responderei o mais rápido possível :)"
 		}
 	};
 	createGreetingApi(greetingData);
+}
+
+function parseJson(json) {
+	var keys = Object.keys(json);
 }

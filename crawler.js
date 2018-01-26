@@ -11,16 +11,12 @@ var numPagesVisited = 0;
 var pagesToVisit = new Set(); // O site possui links repetidos, utilizo o Set para evitar problemas
 
 pagesToVisit.add(START_URL);
-crawl();
 
 // Realizar o crawl das paginas a serem visitadas
 function crawl() {
   if (pagesToVisit.length <= 0) {
-    console.log(movies);
-    return movies;
+    return parseJson(movies);
   }
-
-  console.log(pagesToVisit);
   
   // Caso a pesquisa por links absolutos não tenha sido feita
   if (!linksFound) {
@@ -121,6 +117,28 @@ function movieJSON(details, session) {
   return json;
 }
 
+function parseJson(data) {
+  var finalMessage = "";
+  for (d in data) {
+    let movie = data[d];
+    let message = "";
+    let keys = Object.keys(movie);
+    for (i in keys) {
+      let key = keys[i];
+      if (movie.hasOwnProperty(key) && key !== 'description') {
+        if (key === 'title') {
+          message += movie[key].replace("Horário de Funcionamento e Valores", "");
+        } else {
+          message += movie[key];
+        }
+        message += "\n";
+      }
+    }
+    finalMessage += message;
+  }
+  return finalMessage;
+}
+
 module.exports = {
-  partageCrawler: function() { return crawl() }
+  crawl: function() { return crawl() }
 };

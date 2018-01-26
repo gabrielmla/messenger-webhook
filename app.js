@@ -2,10 +2,9 @@
 const crawler = require('./crawler.js');
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const defaultMessages = {
-	default: "Qual informação deseja obter? Filmes\nPreços\nHorário\nMe envie uma mensagem com um dessas palavras e responderei o mais rápido possível :)",
+	default: "Qual informação deseja obter?\n- Filmes\n- Preços\n- Horário\nMe envie uma mensagem com uma dessas palavras e responderei o mais rápido possível :)",
 	horario: "Todos os dias de 14h ás 22h!",
-	valores: "Segunda a Sexta-Feira\nPreço único: R$ 12,00 (2D) | R$ 14,00 (3D)\nSábado, Domingo e feriados\nInteira: R$ 24,00 (2D) | Meia: R$ 12,00 (2D)\nInteira: R$ 28,00 (3D) | Meia: R$ 14,00 (3D)",
-	filmes: "Título: OS PARÇAS\nComédia\nDiretor: Halder Gomes\nDuração: 1h40min\nDistribuidor: DOWNTOWN FILMES\nSala 3 18:20\n\nTítulo: EXTRAORDINÁRIO\nDrama, Família\nTítulo original:  Wonder\nDiretor: Stephen Chbosky\nDuração: 1h54min\nDistribuidor: PARIS FILMES\nSala 5 20:45\n\nTítulo: FALA SÉRIO, MÃE!\nComédia\nDiretor: Pedro Vasconcelos\nDuração: 1h20min\nDistribuidor: DOWNTOWN FILMES\nSala 4 14:50\n\nTítulo: O TOURO FERDINANDO\nAnimação, Comédia\nTítulo original: Ferdinand\nDiretor: Carlos Saldanha\nDuração: 1h37min\nDistribuidor: Fox Film do Brasil\nSala 5 18:40\n\nTítulo: VIVA – A VIDA É UMA FESTA\nAnimação, Aventura, Fantasia\nTítulo original: Coco\nDiretor: Lee Unkrich, Adrian Molina\nDuração: 1h45min\nDistribuidor: DISNEY / BUENA VISTA\nSala 4 16:50\n\nTítulo: JUMANJI: BEM-VINDO À SELVA\nAção, Fantasia\nTítulo original: Jumanji: Welcome to the Jungle\nDiretor: Jake Kasdan\nDuração: 1h59min\nDistribuidor:  SONY PICTURES\nSala 1 18:30,Sala 1 20:45\n\nTítulo: O TOURO FERDINANDO\nAnimação, Comédia\nTítulo original: Ferdinand\nDiretor: Carlos Saldanha\nDuração: 1h37min\nDistribuidor: Fox Film do Brasil\nSala 1 14:20,Sala 1 16:25\n\nTítulo: SOBRENATURAL: A ÚLTIMA CHAVE\nTerror\nTítulo original: Insidious: The Last Key\nDiretor:  Adam Robitel\nDuração: 1h43min\nDistribuidor:  SONY PICTURES\nSala 4 20:50\n\nTítulo: SOBRENATURAL: A ÚLTIMA CHAVE\nTerror\nTítulo original: Insidious: The Last Key\nDiretor:  Adam Robitel\nDuração: 1h43min\nDistribuidor:  SONY PICTURES\nSala 4 18:50\n\nTítulo: VIVA – A VIDA É UMA FESTA\nAnimação, Aventura, Fantasia\nTítulo original: Coco\nDiretor: Lee Unkrich, Adrian Molina\nDuração: 1h45min\nDistribuidor: DISNEY / BUENA VISTA\nSala 5 14:25\n\nTítulo: JUMANJI: BEM-VINDO À SELVA\nAção, Fantasia\nTítulo original: Jumanji: Welcome to the Jungle\nDiretor: Jake Kasdan\nDuração: 1h59min\nDistribuidor:  SONY PICTURES\nSala 5 16:25\n\nTítulo: MAZE RUNNER: A CURA MORTAL\nAventura, Ficção Científica\nTítulo original: Maze Runner: The Death Cure\nDiretor: Wes Ball\nDuração: 2h21min\nDistribuidor: Fox Film do Brasil\nSala 2 18:00\n\nTítulo: MAZE RUNNER: A CURA MORTAL\nAventura, Ficção Científica\nTítulo original: Maze Runner: The Death Cure\nDiretor: Wes Ball\nDuração: 2h21min\nDistribuidor: Fox Film do Brasil\nSala 2 15:20,Sala 2 20:40\n\nTítulo: MAZE RUNNER: A CURA MORTAL\nAventura, Ficção Científica\nTítulo original: Maze Runner: The Death Cure\nDiretor: Wes Ball\nDuração: 2h21min\nDistribuidor: Fox Film do Brasil\nSala 3 20:20\n\nTítulo: ENCOLHI A PROFESSORA\nAventura, Comédia, Família, Fantasia\nTítulo original: Hilfe, Ich Hab Meine Lehrerin Geschrumpft\nDiretor: Sven Unterwaldt\nDuração: 1h42min\nDistribuidor: Alpha Filmes Ltda\nSala 3 14:20,Sala 3 16:20\n\n"
+	valores: "Segunda a Sexta-Feira\nPreço único: R$ 12,00 (2D) | R$ 14,00 (3D)\nSábado, Domingo e feriados\nInteira: R$ 24,00 (2D) | Meia: R$ 12,00 (2D)\nInteira: R$ 28,00 (3D) | Meia: R$ 14,00 (3D)"
 };
 var movies;
 
@@ -21,7 +20,6 @@ crawler.promise.then(function(result) {
 	movies = result;
 	app.listen(process.env.PORT || 1337, function() {
 		console.log('webhook is listening');
-		console.log(result);
 		setGreetingText();
 	});
 });
@@ -130,6 +128,7 @@ function handleMessage(sender_psid, received_message) {
   callSendAPI(request_body);    
 }
 
+// Iterate over the movies, the Messenger bot can't send messages with more than 640 characters
 function sendMovies(movies, sender_psid) {
 	for (i = 0; i < movies.length; i++) {
 		var response = {

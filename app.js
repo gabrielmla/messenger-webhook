@@ -104,9 +104,7 @@ function handleMessage(sender_psid, received_message) {
     // Create the payload for a basic text message, which
     // will be added to the body of our request to the Send API
     if (message.toLowerCase() === 'filmes') {
-    	response = {
-    		"text": defaultMessages.filmes
-    	}
+    	sendMovies(movies, sender_psid);
     } else if (message.toLowerCase() === 'horários' || message.toLowerCase() === 'horarios') {
     	response = {
     		"text": defaultMessages.horario
@@ -130,6 +128,21 @@ function handleMessage(sender_psid, received_message) {
   }
   // Send the response message
   callSendAPI(request_body);    
+}
+
+function sendMovies(movies, sender_psid) {
+	for (i = 0; i < movies.length; i++) {
+		var response = {
+			"text": movies[i]
+		}
+		var request_body = {
+		    "recipient": {
+		      "id": sender_psid
+		    },
+		    "message": response
+		}
+		callSendAPI(request_body);
+	};
 }
 
 // Handles messaging_postbacks events

@@ -132,6 +132,7 @@ function movieJSON(details, session) {
 }
 
 function parseJson(data) {
+  var result = [];
   var finalMessage = "";
   for (d in data) {
     let movie = data[d];
@@ -150,9 +151,14 @@ function parseJson(data) {
       }
     }
     message += "\n";
-    finalMessage += message;
+
+    if (finalMessage.length + message.length <= 640) {
+      finalMessage += message;
+    } else {
+      result.push(finalMessage);
+    }
   }
-  return finalMessage;
+  return result;
 }
 
 module.exports = {

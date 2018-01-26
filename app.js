@@ -98,7 +98,7 @@ function handleMessage(sender_psid, received_message) {
     if (message.toLowerCase() === 'filmes') {
     	sendTypingOn(sender_psid);
     	response = {
-    		"text": crawler.crawl();
+    		"text": crawler.crawl()
     	}
     } else if (message.toLowerCase() === 'horário' || message.toLowerCase() === 'horario') {
     	response = {

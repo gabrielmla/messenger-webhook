@@ -159,6 +159,7 @@ function parseJson(data) {
       finalMessage = message;
     }
   }
+  result.push(finalMessage);
   return result;
 }
 

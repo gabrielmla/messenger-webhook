@@ -2,7 +2,7 @@
 const crawler = require('./crawler.js');
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
 const defaultMessages = {
-	default: "Qual informação deseja obter?\n- Filmes\n- Preços\n- Horário\nMe envie uma mensagem com uma dessas palavras e responderei o mais rápido possível :)",
+	default: "Qual informação deseja obter?\n- Filmes\n- Preços\n- Horários\nMe envie uma mensagem com uma dessas palavras e responderei o mais rápido possível :)",
 	horario: "Todos os dias de 14h ás 22h!",
 	valores: "Segunda a Sexta-Feira\nPreço único: R$ 12,00 (2D) | R$ 14,00 (3D)\nSábado, Domingo e feriados\nInteira: R$ 24,00 (2D) | Meia: R$ 12,00 (2D)\nInteira: R$ 28,00 (3D) | Meia: R$ 14,00 (3D)"
 };

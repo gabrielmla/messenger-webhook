@@ -10,14 +10,13 @@ var movies;
 
 // Imports dependencies and set up http server
 const request = require('request');
-const http = require('http');
 const
   express = require('express'),
   bodyParser = require('body-parser'),
   app = express().use(bodyParser.json()); // creates express http server
 
 setInterval(function() {
-    http.get("http://messenger-webhook-19.herokuapp.com");
+    request("http://messenger-webhook-19.herokuapp.com");
 }, 300000);
 
 // Sets server port and logs message on success
